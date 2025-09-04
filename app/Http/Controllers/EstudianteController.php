@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Estudiante;
+use App\Http\Requests\EstudianteRequest; // Importar el Request
 use Illuminate\Http\Request;
 
 class EstudianteController extends Controller
@@ -13,7 +14,7 @@ class EstudianteController extends Controller
     public function index()
     {
         $estudiantes = Estudiante::all();
-        return view('index', compact('estudiantes')); // Cambiado de 'estudiantes.index' a 'index'
+        return view('estudiantes.index', compact('estudiantes'));
     }
 
     /**
@@ -21,25 +22,16 @@ class EstudianteController extends Controller
      */
     public function create()
     {
-        return view('create'); // Cambiado de 'estudiantes.create' a 'create'
+        return view('estudiantes.create');
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(EstudianteRequest $request) // Cambiar a EstudianteRequest
     {
-        $request->validate([
-            'nombres' => 'required|string|max:255',
-            'apellidos' => 'required|string|max:255',
-            'carnet_identidad' => 'required|string|unique:estudiantes|max:20',
-            'edad' => 'required|integer|min:1|max:150',
-            'fecha_nacimiento' => 'required|date',
-            'email' => 'required|email|unique:estudiantes|max:255',
-            'estado' => 'boolean'
-        ]);
-
-        Estudiante::create($request->all());
+        // La validación se hace automáticamente en EstudianteRequest
+        Estudiante::create($request->validated());
 
         return redirect()->route('estudiantes.index')
             ->with('success', 'Estudiante creado exitosamente.');
@@ -50,7 +42,7 @@ class EstudianteController extends Controller
      */
     public function show(Estudiante $estudiante)
     {
-        return view('show', compact('estudiante')); // Cambiado de 'estudiantes.show' a 'show'
+        return view('estudiantes.show', compact('estudiante'));
     }
 
     /**
@@ -58,25 +50,16 @@ class EstudianteController extends Controller
      */
     public function edit(Estudiante $estudiante)
     {
-        return view('edit', compact('estudiante')); // Cambiado de 'estudiantes.edit' a 'edit'
+        return view('estudiantes.edit', compact('estudiante'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Estudiante $estudiante)
+    public function update(EstudianteRequest $request, Estudiante $estudiante) // Cambiar a EstudianteRequest
     {
-        $request->validate([
-            'nombres' => 'required|string|max:255',
-            'apellidos' => 'required|string|max:255',
-            'carnet_identidad' => 'required|string|max:20|unique:estudiantes,carnet_identidad,' . $estudiante->id,
-            'edad' => 'required|integer|min:1|max:150',
-            'fecha_nacimiento' => 'required|date',
-            'email' => 'required|email|max:255|unique:estudiantes,email,' . $estudiante->id,
-            'estado' => 'boolean'
-        ]);
-
-        $estudiante->update($request->all());
+        // La validación se hace automáticamente en EstudianteRequest
+        $estudiante->update($request->validated());
 
         return redirect()->route('estudiantes.index')
             ->with('success', 'Estudiante actualizado exitosamente.');
